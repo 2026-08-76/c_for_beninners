@@ -1,0 +1,4 @@
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\setup-gcc.ps1"
+".\.tools\w64devkit\w64devkit\bin\gcc.exe" --version
+".\.tools\w64devkit\w64devkit\bin\gcc.exe" -std=c17 -Wall -Wextra -pedantic ".\main.c" -o ".\programa.exe"
+.\programa.exe
