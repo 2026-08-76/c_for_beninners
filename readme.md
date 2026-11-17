@@ -1,6 +1,6 @@
 # Programação em C: guia do aluno
 
-**Autoria: Profº Hudson Neves**
+**Autor: Profº Hudson Neves**
 
 Este guia mostra como abrir o repositório, preparar o compilador e executar o
 primeiro programa. Escolha **uma** das opções abaixo:
