@@ -1,4 +1,56 @@
+# Como compilar e executar um programa em C no Windows
+
+Este guia mostra como preparar o GCC, criar um arquivo `.exe` a partir de
+`main.c` e executar o programa usando o CMD.
+
+## 1. Abra a pasta do projeto no CMD
+
+No VS Code, abra a pasta do projeto e escolha **Terminal > Novo Terminal**.
+Se o terminal não for o CMD, abra um CMD e entre na pasta do projeto:
+
+```cmd
+cd /d "C:\caminho\para\c_for_beninners-main"
+```
+
+Use o caminho onde você salvou o projeto. O terminal deve estar na pasta que
+contém `main.c` e `setup-gcc.ps1`.
+
+## 2. Prepare o GCC (apenas na primeira vez)
+
+O computador precisa estar conectado à internet durante a instalação. No CMD,
+execute:
+
+```cmd
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\setup-gcc.ps1"
+```
+
+O script baixa o GCC portátil, verifica o arquivo e instala o compilador dentro
+da pasta `.tools` do projeto. Essa opção não altera permanentemente a política
+de execução do PowerShell.
+
+Para confirmar a instalação:
+
+```cmd
 ".\.tools\w64devkit\w64devkit\bin\gcc.exe" --version
-".\.tools\w64devkit\w64devkit\bin\gcc.exe" -std=c17 -Wall -Wextra -pedantic ".\main.c" -o ".\programa.exe"
-.\programa.exe
+```
+
+## 3. Compile `main.c` para criar o `.exe`
+
+Confirme que `main.c` está na pasta principal do projeto. No CMD, execute:
+
+```cmd
+if not exist build mkdir build
+".\.tools\w64devkit\w64devkit\bin\gcc.exe" -std=c17 -Wall -Wextra -pedantic ".\main.c" -o ".\build\programa.exe"
+```
+
+Se a compilação terminar sem erros, o executável estará em
+`build\programa.exe`.
+
+## 4. Execute o programa
+
+```cmd
+.\build\programa.exe
+```
+
+Quando editar e salvar `main.c`, execute novamente o comando de compilação antes
+de abrir o `.exe`, para que ele inclua as alterações.
