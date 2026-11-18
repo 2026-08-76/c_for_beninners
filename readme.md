@@ -1,124 +1,132 @@
-# Programação em C: guia do aluno
+# Como compilar e executar um programa em C no Windows
 
 **Autor: Profº Hudson Neves**
 
-Este guia mostra como abrir o repositório, preparar o compilador e executar o
-primeiro programa. Escolha **uma** das opções abaixo:
+Este guia mostra como preparar o GCC, entender o arquivo `main.c`, criar um
+arquivo `.exe` e executar o programa no Windows usando o CMD.
 
-- **GitHub Codespaces:** o compilador executa em um ambiente remoto; precisa de
-  acesso ao GitHub Codespaces.
-- **Windows local:** o compilador fica dentro da pasta do repositório; precisa
-  de Windows 10/11 x64 e de permissão da escola para executar os programas.
+## 1. Abra a pasta do projeto no CMD
 
-## Opção 1: usar GitHub Codespaces
+No VS Code, abra a pasta do projeto e escolha **Terminal > Novo Terminal**.
+Se o terminal não estiver usando o CMD, abra um prompt de comando e entre na
+pasta do projeto:
 
-1. Abra a página deste repositório no GitHub:
-   <https://github.com/2026-08-76/c_for_beninners>.
-2. Clique em **Code** > **Codespaces** > **Create codespace on main**.
-3. Aguarde o VS Code abrir no navegador. A criação do ambiente pode levar alguns
-   minutos.
-4. No VS Code, abra **Terminal** > **New Terminal**.
-5. Pule para [Criar, compilar e executar seu programa](#criar-compilar-e-executar-seu-programa).
+```cmd
+cd /d "C:\caminho\para\c_for_beninners-main"
+```
 
-O Codespace já contém o compilador. A criação e o uso precisam de conexão à
-internet e de permissão para usar Codespaces na conta da escola.
+Use o caminho onde você salvou o projeto. O terminal deve estar na pasta que
+contém os arquivos `main.c` e `setup-gcc.ps1`.
 
-## Opção 2: usar GCC portátil no Windows
+## 2. Prepare o GCC (apenas na primeira vez)
 
-O script deste repositório baixa uma distribuição portátil do GCC e a extrai em
-`.tools/`. Não é necessário instalar o compilador no Windows nem ter
-permissões de administrador. O download acontece uma vez por clone; depois da
-preparação, é possível compilar sem internet.
+O computador precisa estar conectado à internet durante a instalação. No CMD,
+execute:
 
-### A. Clonar e abrir o repositório
+```cmd
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\setup-gcc.ps1"
+```
 
-1. Abra a página deste repositório no GitHub.
-2. Clique em **Code** > **HTTPS** e copie o endereço.
-3. No VS Code, pressione `Ctrl+Shift+P`, procure **Git: Clone** e selecione o
-   comando.
-4. Cole o endereço copiado, escolha uma pasta para guardar o repositório e
-   aguarde a clonagem.
-5. Quando o VS Code perguntar, escolha **Open** para abrir a pasta clonada.
+O script baixa o GCC portátil, verifica o arquivo e instala o compilador dentro
+da pasta `.tools` do projeto. Essa opção não altera permanentemente a política
+de execução do PowerShell.
 
-### B. Preparar o compilador com um comando
+Para confirmar a instalação:
 
-1. No VS Code, abra **Terminal** > **New Terminal**. O terminal deve ser
-   PowerShell e estar na pasta principal do repositório.
-2. Execute este único comando de preparação:
+```cmd
+".\.tools\w64devkit\w64devkit\bin\gcc.exe" --version
+```
 
-   ```powershell
-   .\setup-gcc.ps1
-   ```
+## 3. Entenda o arquivo `main.c`
 
-3. Aguarde o download e a extração. O script verifica o SHA-256 do pacote antes
-   de usá-lo. Ao terminar, deve mostrar informações de versão do GCC.
+O arquivo `main.c` é o código-fonte do programa. Ele já existe na pasta do
+projeto e contém este exemplo:
 
-Na primeira preparação, o computador precisa estar conectado à internet e
-conseguir acessar o GitHub. O compilador será guardado em
-`.tools/w64devkit/`; essa pasta é local e não é enviada ao repositório.
+```c
+#include <stdio.h>
 
-## Criar, compilar e executar seu programa
+int main(void)
+{
+    printf("Ola, mundo!\n");
+    return 0;
+}
+```
 
-1. No VS Code, crie um arquivo chamado **`main.c`** na pasta principal do
-   repositório.
-2. Cole este exemplo e salve com `Ctrl+S`:
+A explicação das partes principais é:
 
-   ```c
-   #include <stdio.h>
+- `#include <stdio.h>` inclui a biblioteca padrão de entrada e saída, necessária
+  para usar `printf`.
+- `int main(void)` declara a função principal do programa. É por ela que o
+  sistema operacional começa a execução.
+- `{` e `}` delimitam o corpo da função `main`.
+- `printf("Ola, mundo!\n");` escreve a mensagem no terminal. `\n` faz o cursor
+  passar para a próxima linha.
+- `return 0;` informa ao sistema operacional que o programa terminou sem erros.
 
-   int main(void)
-   {
-       printf("Ola, mundo!\n");
-       return 0;
-   }
-   ```
+Edite o conteúdo entre as chaves de `main` e salve o arquivo com `Ctrl+S`. Cada
+vez que alterar `main.c`, será necessário compilá-lo novamente para gerar uma
+nova versão do `.exe`.
 
-3. No terminal, compile o arquivo:
+## 4. Compile `main.c` para criar o `.exe`
 
-   **No Codespaces:**
+Confirme que `main.c` está na pasta principal do projeto. No CMD, execute:
 
-   ```sh
-   gcc -std=c17 -Wall -Wextra -pedantic main.c -o programa
-   ```
+```cmd
+if not exist build mkdir build
+".\.tools\w64devkit\w64devkit\bin\gcc.exe" -std=c17 -Wall -Wextra -pedantic ".\main.c" -o ".\build\programa.exe"
+```
 
-   **No PowerShell do Windows:**
+Se a compilação terminar sem erros, o executável estará em
+`build\programa.exe`.
 
-   ```powershell
-   & ".\.tools\w64devkit\w64devkit\bin\gcc.exe" -std=c17 -Wall -Wextra -pedantic .\main.c -o .\programa.exe
-   ```
+Os parâmetros ajudam a controlar a compilação:
 
-4. Se a compilação terminar sem erros, execute o programa:
+- `-std=c17` usa o padrão C17 da linguagem C.
+- `-Wall -Wextra -pedantic` ativa avisos úteis para encontrar problemas no
+  código.
+- `main.c` é o arquivo-fonte que será compilado.
+- `-o build\programa.exe` define o nome e a pasta do programa criado.
 
-   **No Codespaces:**
+## 5. Execute o programa
 
-   ```sh
-   ./programa
-   ```
+No CMD, execute:
 
-   **No PowerShell do Windows:**
+```cmd
+.\build\programa.exe
+```
 
-   ```powershell
-   .\programa.exe
-   ```
+A saída esperada é:
 
-Você deverá ver `Ola, mundo!` no terminal. Se editar o código, salve o arquivo e
-compile novamente antes de executar.
+```text
+Ola, mundo!
+```
 
-## Se algo der errado
+## 6. Atualize o programa depois de editar
 
-- **O comando `.\setup-gcc.ps1` não foi encontrado:** confirme a pasta atual
-  com `Test-Path .\setup-gcc.ps1`. Se o resultado for `False`, abra a pasta
-  clonada no VS Code e crie um terminal novo.
-- **O PowerShell bloqueou `setup-gcc.ps1` ou o download falhou:** não altere as
-  configurações de segurança. Peça ajuda ao professor ou à equipe de TI.
-- **A verificação do pacote falhou:** não tente executar o arquivo baixado;
-  avise o professor ou a equipe de TI.
-- **`main.c` não foi encontrado:** confira se o arquivo se chama exatamente
-  `main.c`, está salvo e fica na pasta principal do repositório.
-- **O compilador funciona, mas `programa.exe` foi bloqueado:** a equipe de TI
-  também precisa permitir a execução dos programas criados pelos alunos.
-- **Codespaces não aparece ou não abre:** a conta ou a rede da escola pode não
-  ter acesso ao serviço. Peça orientação ao professor ou à equipe de TI.
+Sempre siga esta sequência:
+
+1. Abra e edite `main.c`.
+2. Salve o arquivo com `Ctrl+S`.
+3. Execute novamente o comando de compilação.
+4. Execute `build\programa.exe`.
+
+Não abra diretamente `main.c` como se fosse um programa; ele é texto-fonte e
+precisa ser compilado pelo GCC para virar um executável.
+
+## Resolução de problemas
+
+- **`main.c` não foi encontrado:** confirme que o arquivo se chama exatamente
+  `main.c`, está salvo e fica na pasta principal do projeto.
+- **`setup-gcc.ps1` não foi encontrado:** confirme a pasta atual com
+  `dir setup-gcc.ps1`. Se o arquivo não aparecer, entre na pasta do projeto
+  novamente.
+- **O PowerShell bloqueou o script ou o download falhou:** não altere
+  permanentemente as configurações de segurança do computador. Procure ajuda do
+  professor ou da equipe de TI.
+- **A verificação do pacote falhou:** não execute o arquivo baixado; avise o
+  professor ou a equipe de TI.
+- **O executável foi bloqueado:** a equipe de TI pode precisar permitir a
+  execução dos programas criados pelos alunos.
 
 O GCC portátil é fornecido pelo projeto
 [w64devkit](https://github.com/skeeto/w64devkit).
